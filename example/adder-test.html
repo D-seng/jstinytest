@@ -1,0 +1,70 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+//forEach([1,2,3], function(n) {
+//console.log('hi' + n);
+//});
+
+//forEach([1,2,3], function(n) {
+//console.log('hi' + n);
+//});
+
+
+//Add the index of the current value.
+//forEach([1,2,3], function(n, index) {
+//console.log(index);
+//});
+
+//Add access to original array.
+//forEach([1,2,3], function(n, index, originalArray) {
+//console.log(originalArray);
+//});
+
+
+function forEach(array, callback, optionalThisObject) {
+  var forEachCallback = callback;
+  if (optionalThisObject) {
+    forEachCallback = callback.bind(optionalThisObject);
+  }
+  for (var i = 0; i < array.length; i++) {
+    forEachCallback(array[i], i, array);
+  }
+}
+
+tests({
+  'It should run the callback function array.length times.': function() {
+    var numberOfTimesCallbackHasRun = 0
+    forEach([1,2,3], function() {
+      numberOfTimesCallbackHasRun++;
+      });
+      eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'It should run the callback function array.length number of times and pass in the ith element.': function() {
+    forEach([1], function(n) {
+      eq(n,1);
+    });
+  },
+
+ 'It should, as the second argument to the callback, pass in position i.': function() {
+   forEach([1], function(n, index) {
+     eq(index, 0);
+   });
+ },
+
+ 'It should, as the third argument to the callback, pass in the original array': function() {
+   var testArray = [1,2,3];
+   forEach(testArray, function(n, index, originalArray) {
+     eq(originalArray, testArray);
+   });
+ },
+
+ 'It should accept an optional this object': function() {
+   forEach([1], function() {
+     eq(this.description, "Configurable this object");
+   },{description: "Configurable this object"});
+ }
+});
+
+</script>

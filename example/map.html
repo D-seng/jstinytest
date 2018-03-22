@@ -1,0 +1,112 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+//Test and make a clone of JavaScript's native *filter* function.
+
+
+//Example 1:
+//map([1,2,3], function() {});
+
+//Example 2:
+//map([1,2,3], function(element) {
+//console.log(element);
+//});
+
+//Example 3:
+//Access the index of the current value.
+//map([1,2,3], function(element, index) {
+//console.log(index);
+//});
+
+//Example 4:
+//Add access to original array.
+//filter([1,2,3], function(element, index, originalArray) {
+//console.log(originalArray);
+//});
+
+//Example 5:
+//filter([1,2,3], function() {
+//console.log(this.name);
+//},{name:'gordon'});
+
+//Example 6:
+//var testArray = [1,2,3]
+//var filteredArray = map(testArray, function() {});
+//mappedArray !== testArray;
+
+//Example 7:
+//var testArray = [1,2,3]
+//var mappedArray = filter(testArray, function(element) {
+// return element * 1;
+//});
+//Expect filteredArray = [2,4,6]
+
+function map(originalArray, callback, optionalThisObject) {
+  if (optionalThisObject) {
+    callback = callback.bind(optionalThisObject);
+  }
+  var mappedArray = [];
+  for (var i = 0; i < originalArray.length; i++) {
+    if(i in originalArray) {
+      mappedArray[i] = callback(originalArray[i],i, originalArray);
+    }
+    }
+return mappedArray;
+}
+
+tests({
+  'It should run the callback function array.length times.': function() {
+    var numberOfTimesCallbackHasRun = 0
+    map([1,2,3], function() {
+      numberOfTimesCallbackHasRun++;
+      });
+       eq(numberOfTimesCallbackHasRun, 3);
+  },
+  'It should pass in the ith element as the first argument to the callback.': function() {
+    map([1], function(n) {
+      eq(n,1);
+    });
+  },
+ 'It should pass in the ith position as the second argument to the callback.': function() {
+    map([1], function(n, index) {
+     eq(index, 0);
+   });
+ },
+  'It should, as the third argument to the callback, pass in the original array': function() {
+   var testArray = [1,2,3];
+   map(testArray, function(n, index, originalArray) {
+     eq(originalArray, testArray);
+   });
+ },
+ 'It should accept an optional this object': function() {
+   map([1], function() {
+     eq(this.description, "Configurable this object");
+   },{description: "Configurable this object"});
+ },
+ 'It should return an array.': function() {
+   var mappededArray = map([1], function() {});
+   eq(Array.isArray(mappededArray), true);
+ },
+ 'It should return a new array, not the input array.': function() {
+    var testArray = [];
+    var mappedArray = map(testArray, function() {});
+    eq(testArray !== mappedArray, true);
+ },
+ 'It should return a mapped array.': function() {
+   var mappedArray = map([1], function(number) {
+     return number * 3;
+   });
+      eq(3, mappedArray[0]);
+},
+'It should skip unassigned indexes': function() {
+  var weirdArray = [,1];
+  var mappedArray = map(weirdArray, function double(number){
+    return number * 2;
+  });
+    console.log(mappedArray);
+      eq(0 in mappedArray, false);
+      eq(mappedArray[1], 2);
+    }
+});
+</script>
